@@ -1,0 +1,507 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
+
+/* --- Temas y Variables de Color --- */
+
+/* Tema Claro */
+:root {
+    --dominant-bg: #EFECE3;
+    --secondary-bg: #FFFFFF;
+    --primary-accent: #4A70A9;
+    --secondary-accent: #8FABD4;
+    --danger-accent: #DD0303;
+    --text-primary: #000000;
+    --text-secondary: #4A70A9;
+    --border-color: #EAEAEA;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --button-text-color: rgba(50, 50, 50, 1);
+    --dot-color: rgba(0,0,0,0.08); /* Adjusted alpha */
+}
+
+/* Tema Oscuro */
+body.dark-theme {
+    --dominant-bg: #3C467B;
+    --secondary-bg: #50589C;
+    --primary-accent: #6E8CFB;
+    --secondary-accent: #636CCB;
+    --danger-accent: #F87171;
+    --text-primary: #EAE6E2;
+    --text-secondary: #A9B1E1;
+    --border-color: #636CCB;
+    --shadow-color: rgba(0, 0, 0, 0.2);
+    --button-text-color: rgba(230, 230, 230, 1);
+    --dot-color: rgba(255,255,255,0.08); /* Adjusted alpha */
+    --toast-bg: rgba(26, 26, 26, 0.95);
+    --toast-text: #EAE6E2;
+    --toast-success-icon: #28a745;
+    --toast-error-icon: #F87171;
+}
+
+/* --- Estilos Globales --- */
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--dominant-bg);
+    color: var(--text-primary);
+    margin: 0;
+    padding: 20px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#app {
+    max-width: 800px;
+    margin: 40px auto;
+    background-color: var(--secondary-bg);
+    padding: 30px;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px -10px var(--shadow-color);
+    border: 1px solid var(--border-color);
+    transition: background-color 0.3s, border-color 0.3s;
+    position: relative;
+    z-index: 1;
+}
+
+/* --- Tipografía --- */
+h1, h2 {
+    text-align: center;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+h2 { color: var(--text-secondary); font-size: 1.2em; margin-bottom: 20px; }
+
+/* --- Contenedor de Subida --- */
+#upload-container {
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+}
+
+#text-input {
+    flex-grow: 1;
+    padding: 18px 15px;
+    height: 70px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background-color: var(--dominant-bg);
+    color: var(--text-primary);
+    box-sizing: border-box;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 16px;
+    transition: border-color 0.3s, background-color 0.3s;
+}
+#text-input:focus {
+    outline: none;
+    border-color: var(--primary-accent);
+}
+
+#file-input { display: none; }
+
+/* Se eliminan los estilos de file-input-label para reemplazarlos con los de glass-button */
+
+/* --- Botones --- */
+/* Se eliminan los estilos de #upload-container button y #clear-all-button */
+
+/* --- Contenedor del Portapapeles --- */
+#clipboard-container { margin-top: 30px; }
+
+.clipboard-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin-bottom: 15px;
+    background-color: var(--secondary-bg);
+    position: relative;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+.clipboard-item.menu-open { z-index: 2; }
+.clipboard-item:hover { 
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px -5px var(--shadow-color);
+    border-color: var(--primary-accent);
+}
+
+.item-content p { margin: 0; word-break: break-word; }
+.item-content a { color: var(--primary-accent); text-decoration: none; font-weight: 500; }
+.item-content a:hover { text-decoration: underline; }
+
+/* --- Menú Desplegable (sin cambios) --- */
+.menu-button {
+    background: none; border: none;
+    color: var(--text-secondary);
+    font-size: 24px; cursor: pointer;
+    padding: 0 10px; border-radius: 50%;
+    transition: color 0.3s, background-color 0.3s;
+}
+.menu-button:hover { color: var(--text-primary); background-color: var(--dominant-bg); }
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 30px;
+    top: 60px;
+    background-color: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 5px 20px var(--shadow-color);
+    z-index: 100;
+    overflow: hidden;
+    width: 120px;
+}
+.dropdown-menu.show { display: block; }
+.dropdown-item { padding: 12px 15px; cursor: pointer; font-size: 14px; transition: background-color 0.2s; }
+.dropdown-item:hover { background-color: var(--dominant-bg); }
+.details-btn { border-bottom: 1px solid var(--border-color); }
+.delete-btn { color: var(--danger-accent); font-weight: 500; }
+
+/* --- Switcher de Tema (sin cambios) --- */
+.theme-switcher {
+    position: fixed; bottom: 20px; right: 20px;
+    display: flex; gap: 8px;
+    background-color: var(--secondary-bg);
+    padding: 8px;
+    border-radius: 25px;
+    box-shadow: 0 5px 15px -5px var(--shadow-color);
+    border: 1px solid var(--border-color);
+}
+.theme-switcher button { 
+    width: 30px; height: 30px; border: 2px solid transparent;
+    border-radius: 50%; cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    background-color: transparent; color: var(--text-secondary);
+    transition: all 0.3s ease;
+}
+.theme-switcher button:hover { color: var(--text-primary); }
+.theme-switcher button.active { border-color: var(--primary-accent); color: var(--primary-accent); }
+
+/* --- Feedback de Archivo --- */
+#file-feedback {
+    margin-top: 5px; font-size: 14px;
+    color: var(--text-secondary); text-align: center;
+    min-height: 20px;
+}
+
+/* ========== NEW BUTTON STYLES ========== */
+@property --angle-1 {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: -75deg;
+}
+
+@property --angle-2 {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: -45deg;
+}
+
+:root {
+  --anim--hover-time: 400ms;
+  --anim--hover-ease: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.button-wrap {
+  position: relative;
+  z-index: 2;
+  border-radius: 999vw;
+  background: transparent;
+  pointer-events: none;
+  transition: all var(--anim--hover-time) var(--anim--hover-ease);
+  display: inline-block;
+}
+
+.button-shadow {
+  --shadow-cuttoff-fix: 2em;
+  position: absolute;
+  width: calc(100% + var(--shadow-cuttoff-fix));
+  height: calc(100% + var(--shadow-cuttoff-fix));
+  top: calc(0% - var(--shadow-cuttoff-fix) / 2);
+  left: calc(0% - var(--shadow-cuttoff-fix) / 2);
+  filter: blur(clamp(2px, 0.125em, 12px));
+  -webkit-filter: blur(clamp(2px, 0.125em, 12px));
+  overflow: visible;
+  pointer-events: none;
+}
+
+.button-shadow::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border-radius: 999vw;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.1));
+  width: calc(100% - var(--shadow-cuttoff-fix) - 0.25em);
+  height: calc(100% - var(--shadow-cuttoff-fix) - 0.25em);
+  top: calc(var(--shadow-cuttoff-fix) - 0.5em);
+  left: calc(var(--shadow-cuttoff-fix) - 0.875em);
+  padding: 0.125em;
+  box-sizing: border-box;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  transition: all var(--anim--hover-time) var(--anim--hover-ease);
+  overflow: visible;
+  opacity: 1;
+}
+
+.glass-button {
+  --border-width: clamp(1px, 0.0625em, 4px);
+  all: unset;
+  cursor: pointer;
+  position: relative;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  pointer-events: auto;
+  z-index: 3;
+  background: linear-gradient(
+    -75deg,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0.05)
+  );
+  border-radius: 999vw;
+  box-shadow: inset 0 0.125em 0.125em rgba(0, 0, 0, 0.05),
+    inset 0 -0.125em 0.125em rgba(255, 255, 255, 0.5),
+    0 0.25em 0.125em -0.125em rgba(0, 0, 0, 0.2),
+    0 0 0.1em 0.25em inset rgba(255, 255, 255, 0.2),
+    0 0 0 0 rgba(255, 255, 255, 1);
+  backdrop-filter: blur(clamp(1px, 0.125em, 4px));
+  -webkit-backdrop-filter: blur(clamp(1px, 0.125em, 4px));
+  transition: all var(--anim--hover-time) var(--anim--hover-ease);
+}
+
+.glass-button:hover {
+  transform: scale(0.975);
+  backdrop-filter: blur(0.01em);
+  -webkit-backdrop-filter: blur(0.01em);
+  box-shadow: inset 0 0.125em 0.125em rgba(0, 0, 0, 0.05),
+    inset 0 -0.125em 0.125em rgba(255, 255, 255, 0.5),
+    0 0.15em 0.05em -0.1em rgba(0, 0, 0, 0.25),
+    0 0 0.05em 0.1em inset rgba(255, 255, 255, 0.5),
+    0 0 0 0 rgba(255, 255, 255, 1);
+}
+
+.glass-button span {
+  position: relative;
+  display: block;
+  user-select: none;
+  -webkit-user-select: none;
+  font-family: "Inter", sans-serif;
+  letter-spacing: -0.05em;
+  font-weight: 500;
+  font-size: 16px;
+  color: var(--button-text-color);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-shadow: 0em 0.25em 0.05em rgba(0, 0, 0, 0.1);
+  transition: all var(--anim--hover-time) var(--anim--hover-ease);
+  padding-inline: 1.5em;
+  padding-block: 0.875em;
+}
+
+.glass-button:hover span {
+  text-shadow: 0.025em 0.025em 0.025em rgba(0, 0, 0, 0.12);
+}
+
+.glass-button span::after {
+  content: "";
+  display: block;
+  position: absolute;
+  z-index: 1;
+  width: calc(100% - var(--border-width));
+  height: calc(100% - var(--border-width));
+  top: calc(0% + var(--border-width) / 2);
+  left: calc(0% + var(--border-width) / 2);
+  box-sizing: border-box;
+  border-radius: 999vw;
+  overflow: clip;
+  background: linear-gradient(
+    var(--angle-2),
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.5) 40% 50%,
+    rgba(255, 255, 255, 0) 55%
+  );
+  z-index: 3;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  background-size: 200% 200%;
+  background-position: 0% 50%;
+  background-repeat: no-repeat;
+  transition: background-position calc(var(--anim--hover-time) * 1.25)
+      var(--anim--hover-ease),
+    --angle-2 calc(var(--anim--hover-time) * 1.25) var(--anim--hover-ease);
+}
+
+.glass-button:hover span::after { background-position: 25% 50%; }
+.glass-button:active span::after { background-position: 50% 15%; --angle-2: -15deg; }
+
+.glass-button::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  border-radius: 999vw;
+  width: calc(100% + var(--border-width));
+  height: calc(100% + var(--border-width));
+  top: calc(0% - var(--border-width) / 2);
+  left: calc(0% - var(--border-width) / 2);
+  padding: var(--border-width);
+  box-sizing: border-box;
+  background: conic-gradient(
+      from var(--angle-1) at 50% 50%,
+      rgba(0, 0, 0, 0.5),
+      rgba(0, 0, 0, 0) 5% 40%,
+      rgba(0, 0, 0, 0.5) 50%,
+      rgba(0, 0, 0, 0) 60% 95%,
+      rgba(0, 0, 0, 0.5)
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5));
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  transition: all var(--anim--hover-time) var(--anim--hover-ease),
+    --angle-1 500ms ease;
+  box-shadow: inset 0 0 0 calc(var(--border-width) / 2) rgba(255, 255, 255, 0.5);
+}
+
+.glass-button:hover::after { --angle-1: -125deg; }
+.glass-button:active::after { --angle-1: -75deg; }
+
+.button-wrap:has(.glass-button:hover) .button-shadow {
+  filter: blur(clamp(2px, 0.0625em, 6px));
+  -webkit-filter: blur(clamp(2px, 0.0625em, 6px));
+  transition: filter var(--anim--hover-time) var(--anim--hover-ease);
+}
+
+.button-wrap:has(.glass-button:hover) .button-shadow::after {
+  top: calc(var(--shadow-cuttoff-fix) - 0.875em);
+  opacity: 1;
+}
+
+.button-wrap:has(.glass-button:active) { transform: rotate3d(1, 0, 0, 25deg); }
+
+.button-wrap:has(.glass-button:active) .glass-button {
+  box-shadow: inset 0 0.125em 0.125em rgba(0, 0, 0, 0.05),
+    inset 0 -0.125em 0.125em rgba(255, 255, 255, 0.5),
+    0 0.125em 0.125em -0.125em rgba(0, 0, 0, 0.2),
+    0 0 0.1em 0.25em inset rgba(255, 255, 255, 0.2),
+    0 0.225em 0.05em 0 rgba(0, 0, 0, 0.05),
+    0 0.25em 0 0 rgba(255, 255, 255, 0.75),
+    inset 0 0.25em 0.05em 0 rgba(0, 0, 0, 0.15);
+}
+
+.button-wrap:has(.glass-button:active) .button-shadow {
+  filter: blur(clamp(2px, 0.125em, 12px));
+  -webkit-filter: blur(clamp(2px, 0.125em, 12px));
+}
+
+.button-wrap:has(.glass-button:active) .button-shadow::after {
+  top: calc(var(--shadow-cuttoff-fix) - 0.5em);
+  opacity: 0.75;
+}
+
+.button-wrap:has(.glass-button:active) span {
+  text-shadow: 0.025em 0.25em 0.05em rgba(0, 0, 0, 0.12);
+}
+
+.file-input-label.glass-button span {
+    padding: 0.4em 0.8em;
+    font-size: 28px;
+}
+
+#clear-all-button.glass-button span {
+    color: var(--danger-accent);
+}
+
+#upload-button.glass-button span {
+    padding-inline: 1.725em;
+}
+
+.background-grid {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+/* --- Toast Notifications --- */
+.toast-container {
+	position: fixed;
+	bottom: 32px;
+	left: 0;
+	right: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	pointer-events: none;
+	z-index: 9999;
+}
+
+.toast {
+	display: flex;
+	align-items: center;
+	background: var(--toast-bg);
+	color: var(--toast-text);
+	border-radius: 18px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+	padding: 18px 24px;
+	margin-top: 12px;
+	min-width: 260px;
+	max-width: 94vw;
+	font-size: 1rem;
+	font-weight: 500;
+	opacity: 0;
+	transform: translateY(30px) scale(0.98);
+	transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+		transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+	pointer-events: all;
+	box-sizing: border-box;
+}
+
+.toast.show {
+	opacity: 1;
+	transform: translateY(0) scale(1);
+}
+
+.toast__icon {
+	width: 24px;
+	height: 24px;
+	margin-right: 14px;
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.toast__icon svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.toast--success .toast__icon svg {
+    fill: var(--toast-success-icon);
+}
+
+.toast--error .toast__icon svg {
+    fill: var(--toast-error-icon);
+}
+
+@media (max-width: 500px) {
+	.toast {
+		font-size: 0.95rem;
+		padding: 14px 10px;
+		min-width: unset;
+	}
+}
