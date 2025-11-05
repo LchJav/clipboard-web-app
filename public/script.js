@@ -58,8 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- SUPABASE & APP LOGIC ---
-    const supabaseUrl = "https://cwdrrdgllpxysqmxnavn.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3ZHJyZGdsbHB4eXNxbXhuYXZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5OTUxNDYsImV4cCI6MjA3NzU3MTE0Nn0.2tv_Orp33adsPKZzeNYAc06cuwyiu_a1eJEW0xafpeE";
+    const supabaseUrl = window.SUPABASE_CONFIG.URL;
+    const supabaseKey = window.SUPABASE_CONFIG.PUBLIC_KEY;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // --- DOM ELEMENTS ---
@@ -246,14 +246,26 @@ document.addEventListener('DOMContentLoaded', () => {
         item.className = 'clipboard-item';
 
         const isText = itemData.type === 'text';
-        const contentHTML = isText ? `<p>${itemData.content}</p>` : `<a href="${itemData.publicUrl}" target="_blank" download>${itemData.name}</a>`;
         
+        const itemContentDiv = document.createElement('div');
+        itemContentDiv.className = 'item-content';
+
+        if (isText) {
+            const p = document.createElement('p');
+            p.textContent = itemData.content; // Use textContent for XSS prevention
+            itemContentDiv.appendChild(p);
+        } else {
+            const a = document.createElement('a');
+            a.href = itemData.publicUrl;
+            a.target = '_blank';
+            a.download = itemData.name; // Ensure download attribute is set for files
+            a.textContent = itemData.name;
+            itemContentDiv.appendChild(a);
+        }
+
         const copyButtonHTML = isText ? '<div class="dropdown-item copy-btn">Copiar</div>' : '';
 
         item.innerHTML = `
-            <div class="item-content">
-                ${contentHTML}
-            </div>
             <button class="menu-button">&#8942;</button>
             <div class="dropdown-menu">
                 ${copyButtonHTML}
@@ -261,6 +273,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="dropdown-item delete-btn">Eliminar</div>
             </div>
         `;
+        // Prepend itemContentDiv before other elements
+        item.prepend(itemContentDiv);
+
 
         clipboardContent.appendChild(item);
 
